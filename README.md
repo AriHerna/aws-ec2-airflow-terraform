@@ -6,9 +6,10 @@ This project uses basically Terraform to build all the infrastructure as needed 
 
 ### Prerequisites
 
-Have SSH keys configured without a passphrase using:
-```
-ssh-keygen -t rsa -b 4096
+Have SSH keys configured without a passphrase using (Mac OS commands):
+```bash
+mkdir ~/.ssh/airflow
+ssh-keygen -t rsa -b 4096 -f ~/.ssh/airflow/id_rsa
 ```
 
 ### Terraform version
@@ -24,34 +25,54 @@ If you already have tfenv installed, it will point automatically your Terraform 
 
 In [terraform.tfvars](IaC2/terraform.tfvars) file configure parameters for your infrastructure, for example
 
-```
+```bash
 webserver_instance_type = "t2.micro"
 scheduler_instance_type = "t2.micro"
 worker_instance_type    = "t2.micro"
 ```
 
-Change this parameter on [terraform.tfvars](IaC2/terraform.tfvars) with your profile name configured in ~/.aws/credentials file
+Change this parameter on [terraform.tfvars](https://github.com/wizeline-sre/aws-ec2-airflow-terraform/blob/master/IaC/terraform.tfvars) with your profile name configured in ~/.aws/credentials file
 
-```
+```bash
 aws_profile = "your-aws-profile"
 ```
 
-Run Terraform's plan command to have an insight of the infrastructure
-
+Move inside IaC folder:
+```bash
+cd aws-ec2-airflow-terraform/IaC
 ```
+
+Run Terraform plan command to have an insight of the infrastructure
+
+```bash
 terraform plan -var-file=terraform.tfvars 
 ```
 
 Run Terraform apply command to build your infrastructure
 
-```
+```bash
 terraform apply -var-file=terraform.tfvars
 ```
 
+*After this point you should wait some minutes to let EC2 instances perform the bootstrap actions and launch Airflow.*
+
 Run Terraform destroy command to delete your infrastructure
 
-```
+```bash
 terraform destroy -var-file=terraform.tfvars
+```
+
+SSH connection to the airflow instances:
+
+Get `.pem` file from private id_rsa:
+
+```bash
+openssl rsa -in ~/.ssh/airflow/id_rsa -outform pem > ~/.ssh/airflow/id_rsa.pem
+chmod 400 id_rsa.pem
+```
+
+```bash
+ssh -i "~/.ssh/airflow/id_rsa.pem" ubuntu@[airflow-ec2-ip]
 ```
 
 ## Contributing
