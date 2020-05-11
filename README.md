@@ -10,6 +10,7 @@ Have SSH keys configured without a passphrase using (Mac OS commands):
 ```bash
 mkdir ~/.ssh/airflow
 ssh-keygen -t rsa -b 4096 -f ~/.ssh/airflow/id_rsa
+ssh-keygen -p -m PEM  -f ~/.ssh/airflow/id_rsa
 ```
 
 ### Terraform version
@@ -45,6 +46,7 @@ cd aws-ec2-airflow-terraform/IaC
 Run Terraform plan command to have an insight of the infrastructure
 
 ```bash
+terraform init
 terraform plan -var-file=terraform.tfvars 
 ```
 
@@ -68,7 +70,7 @@ Get `.pem` file from private id_rsa:
 
 ```bash
 openssl rsa -in ~/.ssh/airflow/id_rsa -outform pem > ~/.ssh/airflow/id_rsa.pem
-chmod 400 id_rsa.pem
+chmod 400 ~/.ssh/airflow/id_rsa.pem
 ```
 
 ```bash
